@@ -33,15 +33,8 @@ html, body {
   align-items: center;
 }
 
-h1 {
-  margin-bottom: 20px;
-  letter-spacing: 2px;
-}
-
-#inputSection {
-  margin-top: 20px;
-}
-
+h1 { margin-bottom: 20px; letter-spacing: 2px; }
+#inputSection { margin-top: 20px; }
 input[type=password] {
   font-family: 'Share Tech Mono', monospace;
   font-size: 18px;
@@ -52,7 +45,6 @@ input[type=password] {
   background: black;
   color: #33ffcc;
 }
-
 button {
   font-family: 'Share Tech Mono', monospace;
   font-size: 18px;
@@ -65,66 +57,20 @@ button {
   cursor: pointer;
   user-select: none;
 }
+button:disabled { color: #004433; border-color: #004433; cursor: default; }
+#message { margin-top: 12px; min-height: 28px; font-weight: bold; }
 
-button:disabled {
-  color: #004433;
-  border-color: #004433;
-  cursor: default;
-}
-
-#message {
-  margin-top: 12px;
-  min-height: 28px;
-  font-weight: bold;
-}
-
-#wifi-container {
-  position: relative;
-  width: 220px;
-  height: 220px;
-  margin: 50px auto 0 auto;
-  z-index: 30;
-}
-
-svg#wifi {
-  width: 100%;
-  height: 100%;
-  user-select: none;
-  overflow: visible;
-}
-
-path.arc, circle.dot {
-  stroke: white;
-  stroke-width: 3;
-  fill: black;
-  stroke-linecap: round;
-  transition: opacity 0.6s ease;
-}
-
+#wifi-container { position: relative; width: 220px; height: 220px; margin: 50px auto 0 auto; z-index: 30; }
+svg#wifi { width: 100%; height: 100%; user-select: none; overflow: visible; }
+path.arc, circle.dot { stroke: white; stroke-width: 3; fill: black; stroke-linecap: round; transition: opacity 0.6s ease; }
 .hidden { opacity: 0.1; }
 
-#cross {
-  position: absolute; top: 0; left: 0;
-  width: 220px; height: 220px;
-  pointer-events: none;
-  display: none;
-  z-index: 40;
-}
-
-#cross::before, #cross::after {
-  content: "";
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 100%; height: 12px;
-  background: red;
-  border-radius: 6px;
-  transform-origin: center;
-}
-
+#cross { position: absolute; top: 0; left: 0; width: 220px; height: 220px; pointer-events: none; display: none; z-index: 40; }
+#cross::before, #cross::after { content: ""; position: absolute; top: 50%; left: 50%; width: 100%; height: 12px; background: red; border-radius: 6px; transform-origin: center; }
 #cross::before { transform: translate(-50%, -50%) rotate(45deg); }
 #cross::after { transform: translate(-50%, -50%) rotate(-45deg); }
 
-#omegaText {
+#omegaText, #successMsg {
   position: fixed;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
@@ -132,96 +78,95 @@ path.arc, circle.dot {
   font-size: 26px;
   letter-spacing: 3px;
   color: #33ffcc;
-  white-space: nowrap;
-  user-select: none;
   display: none;
   z-index: 100;
-}
-
-#successMsg {
-  position: fixed;
-  top: 60%; left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 22px;
-  letter-spacing: 2px;
-  color: #22cc88;
-  display: none;
-  user-select: none;
-  z-index: 100;
-}
-
-#timer {
-  position: fixed;
-  bottom: 12px; right: 12px;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 18px;
-  color: #33ffcc;
-  font-weight: bold;
-  z-index: 50;
-  user-select: none;
-}
-
-#fadeOverlay {
-  position: fixed; top: 0; left: 0; right:0; bottom: 0;
-  background: black; opacity: 0;
   pointer-events: none;
-  z-index: 150;
-  transition: opacity 3s ease;
 }
+
+#successMsg { color: #22cc88; font-size: 22px; top: 60%; }
+
+#timer { position: fixed; bottom: 12px; right: 12px; font-family: 'Share Tech Mono', monospace; font-size: 18px; font-weight: bold; z-index: 50; }
+#fadeOverlay { position: fixed; top: 0; left: 0; right:0; bottom: 0; background: black; opacity: 0; z-index: 150; transition: opacity 3s ease; pointer-events: none; }
 </style>
 </head>
+
 <body>
 
 <canvas id="matrixCanvas"></canvas>
 
-<div id="content" role="main" aria-label="NEXUS-9 Escape Game Interface">
+<div id="content">
   <h1>NEXUS-9 // SICHERHEITSSYSTEM</h1>
 
   <div id="inputSection">
-    <input type="password" id="passwordInput" autocomplete="off" aria-label="Passwort Eingabe" />
-    <button id="submitBtn" aria-label="Passwort prüfen">ENTER</button>
+    <input type="password" id="passwordInput" autocomplete="off"/>
+    <button id="submitBtn">ENTER</button>
   </div>
 
-  <div id="message" aria-live="polite"></div>
+  <div id="message"></div>
 
-  <!-- Neues WLAN-Symbol -->
-  <div id="wifi-container" aria-label="WLAN Signal">
-    <svg id="wifi" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
-      <!-- äußerster Bogen -->
+  <div id="wifi-container">
+    <svg id="wifi" viewBox="0 0 64 64">
       <path id="arc3" class="arc" d="M8 24a24 24 0 0 1 48 0" />
-      <!-- mittlerer Bogen -->
       <path id="arc2" class="arc" d="M16 32a16 16 0 0 1 32 0" />
-      <!-- innerer Bogen -->
       <path id="arc1" class="arc" d="M24 40a8 8 0 0 1 16 0" />
-      <!-- Punkt -->
       <circle id="dot" class="dot" cx="32" cy="48" r="6" />
     </svg>
     <div id="cross"></div>
   </div>
-
 </div>
 
-<div id="timer" aria-live="polite">ZEIT: 10:00</div>
-<div id="omegaText" role="alert" aria-live="assertive">
-  PROTOKOLL OMEGA EINGESCHALTET – KI WIRD VOM NETZ GENOMMEN
-</div>
-<div id="successMsg" role="alert" aria-live="assertive">
-  SYSTEM ERFOLGREICH HERUNTERGEFAHREN
-</div>
+<div id="timer">ZEIT: 10:00</div>
+<div id="omegaText">PROTOKOLL OMEGA EINGESCHALTET – KI WIRD VOM NETZ GENOMMEN</div>
+<div id="successMsg">SYSTEM ERFOLGREICH HERUNTERGEFAHREN</div>
 <div id="fadeOverlay"></div>
 
 <script>
 "use strict";
 
-// SHA-256 Hashfunktion
+// Düster-mysteriöse englische KI-Stimme mit leichtem Echo
+function playMysticVoice() {
+  try {
+    const base = new SpeechSynthesisUtterance("Password accepted");
+    base.lang = "en-US";
+    base.pitch = 0.3;  // tief
+    base.rate = 0.55;  // langsam
+    base.volume = 1.0;
+
+    const echo = new SpeechSynthesisUtterance("Password accepted");
+    echo.lang = "en-US";
+    echo.pitch = 0.35;
+    echo.rate = 0.55;
+    echo.volume = 0.6;
+
+    speechSynthesis.speak(base);
+    setTimeout(() => { speechSynthesis.speak(echo); }, 150); // leicht versetzt für Echo
+  } catch(e){}
+}
+
+// Erfolgston
+function playSuccessSound(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type="sine";
+    osc.frequency.setValueAtTime(700,ctx.currentTime);
+    gain.gain.setValueAtTime(0.2,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime+0.4);
+  }catch(e){}
+}
+
+// SHA-256 Hash
 async function sha256(msg){
   const buf = new TextEncoder().encode(msg);
   const hash = await crypto.subtle.digest('SHA-256', buf);
   return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-// Passwörter in Hash + reversed
 const passwordsPlain = ["Obs1d1an","Cryptex-Alpha","OmegaShutdown"];
 let reversedHashes = [];
 (async()=>{for(let pw of passwordsPlain){let h=await sha256(pw);reversedHashes.push(h.split('').reverse().join(''));}})();
@@ -242,24 +187,31 @@ let currentLevel=0;
 let matrixActive=true;
 let matrixInterval;
 
-// Timer
-let timerSeconds=600;
+// Timer Variablen
+let timerSeconds = 600;
 let timerInterval;
+
+// Timer Funktion
 function updateTimer(){
-  let min=Math.floor(timerSeconds/60);
-  let sec=timerSeconds%60;
-  document.getElementById("timer").textContent=`ZEIT: ${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
-  if(timerSeconds<=0){clearInterval(timerInterval); setMessage("ZEIT ABGELAUFEN"); disableInput();}
+  let min = Math.floor(timerSeconds / 60);
+  let sec = timerSeconds % 60;
+  document.getElementById("timer").textContent = `ZEIT: ${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+  if(timerSeconds <= 0){
+    clearInterval(timerInterval);
+    setMessage("ZEIT ABGELAUFEN");
+    inputEl.disabled = true;
+    btnEl.disabled = true;
+  }
   timerSeconds--;
 }
-function startTimer(){clearInterval(timerInterval); timerSeconds=600; updateTimer(); timerInterval=setInterval(updateTimer,1000);}
 
-function disableInput(){inputEl.disabled=true; btnEl.disabled=true;}
-function enableInput(){inputEl.disabled=false; btnEl.disabled=false; inputEl.focus();}
-
-function playErrorSound(){try{const ctx=new (window.AudioContext||window.webkitAudioContext)();const osc=ctx.createOscillator();osc.type="square";osc.frequency.setValueAtTime(180,ctx.currentTime);osc.connect(ctx.destination);osc.start();setTimeout(()=>osc.stop(),250);}catch(e){}}
-
-function setMessage(text){msgEl.textContent=text;}
+// Timer starten
+function startTimer(){
+  clearInterval(timerInterval);
+  timerSeconds = 600;
+  updateTimer();
+  timerInterval = setInterval(updateTimer, 1000);
+}
 
 // Matrix Hintergrund
 const canvas=document.getElementById("matrixCanvas");
@@ -272,56 +224,73 @@ function setupMatrix(){canvas.width=window.innerWidth;canvas.height=window.inner
 setupMatrix();
 window.addEventListener("resize",setupMatrix);
 
-function drawMatrix(){if(!matrixActive)return;
-ctx.fillStyle="rgba(0,0,0,0.07)"; ctx.fillRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle="#00ffcc"; ctx.font=fontSize+"px 'Share Tech Mono', monospace";
+function drawMatrix(){
+ctx.fillStyle="rgba(0,0,0,0.07)";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle="#00ffcc";
+ctx.font=fontSize+"px monospace";
 for(let i=0;i<drops.length;i++){
 const text=letters.charAt(Math.floor(Math.random()*letters.length));
 ctx.fillText(text,i*fontSize,drops[i]*fontSize);
 if(drops[i]*fontSize>canvas.height && Math.random()>0.975)drops[i]=0;
 drops[i]++;
-}}
-matrixInterval=setInterval(drawMatrix,40);
-
-function runFinalMatrixAnimation(callback){
-let posY=0;
-function animate(){
-ctx.fillStyle="rgba(0,0,0,0.15)"; ctx.fillRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle="#00ffcc"; ctx.font=fontSize+"px 'Share Tech Mono', monospace";
-for(let i=0;i<columns;i++){const text=letters.charAt(Math.floor(Math.random()*letters.length)); ctx.fillText(text,i*fontSize,posY);}
-posY+=fontSize;
-if(posY<canvas.height+fontSize){requestAnimationFrame(animate);}else{callback();}}
-animate();
 }
+}
+matrixInterval=setInterval(drawMatrix,40);
 
 // Passwortprüfung
 async function checkPassword(){
-  if(currentLevel>=passwordsPlain.length)return;
-  let val=inputEl.value.trim(); if(val.length===0)return;
-  let inputHash=await sha256(val); let inputReversed=inputHash.split('').reverse().join('');
+  let val=inputEl.value.trim();
+  if(val.length===0) return;
+
+  let inputHash=await sha256(val);
+  let inputReversed=inputHash.split('').reverse().join('');
+
   if(inputReversed===reversedHashes[currentLevel]){
-    currentLevel++; setMessage("SIGNAL GESCHWÄCHT – BARRIEREN ÜBERWUNDEN");
-    inputEl.value=""; startTimer(); document.body.style.color="#55ffaa"; setTimeout(()=>document.body.style.color="#a0f0e0",800);
-    if(currentLevel===1)arc3.classList.add("hidden");
-    if(currentLevel===2)arc2.classList.add("hidden");
-    if(currentLevel===3){
-      arc1.classList.add("hidden"); dot.classList.add("hidden"); cross.style.display="block";
-      matrixActive=false; clearInterval(matrixInterval);
-      omegaText.style.display="block"; disableInput();
-      setTimeout(()=>{
-        omegaText.style.display="none"; successMsg.style.display="block";
-        setTimeout(()=>{
-          runFinalMatrixAnimation(()=>{fadeOverlay.style.opacity="1";});
-        },3000);
-      },4500);
+    playSuccessSound();
+    playMysticVoice();
+
+    currentLevel++;
+    setMessage("SIGNAL GESCHWÄCHT – BARRIEREN ÜBERWUNDEN");
+    inputEl.value="";
+
+    // Timer erst beim ersten Code starten
+    if(currentLevel === 1){
+      startTimer();
+      arc3.classList.add("hidden");
     }
-  } else {setMessage("FALSCHES PASSWORT"); playErrorSound();}
+
+    if(currentLevel === 2) arc2.classList.add("hidden");
+    if(currentLevel === 3){
+      arc1.classList.add("hidden");
+      dot.classList.add("hidden");
+      cross.style.display = "block";
+      matrixActive = false;
+      clearInterval(matrixInterval);
+      omegaText.style.display = "block";
+      setTimeout(()=>{
+        omegaText.style.display = "none";
+        successMsg.style.display = "block";
+        inputEl.focus();
+        setTimeout(()=>{ fadeOverlay.style.opacity="1"; }, 3000);
+      }, 4500);
+    }
+  } else {
+    setMessage("FALSCHES PASSWORT");
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    osc.type = "square";
+    osc.frequency.setValueAtTime(180,ctx.currentTime);
+    osc.connect(ctx.destination);
+    osc.start();
+    setTimeout(()=>osc.stop(),250);
+  }
 }
 
 btnEl.addEventListener("click",checkPassword);
 inputEl.addEventListener("keydown",(e)=>{if(e.key==="Enter")btnEl.click();});
 
-window.onload=()=>{inputEl.focus(); startTimer();}
+window.onload = () => { inputEl.focus(); } // Timer startet jetzt erst nach erstem Code
 </script>
 
 </body>
